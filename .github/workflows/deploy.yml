@@ -1,0 +1,31 @@
+name: Docker Build and Push Pipeline
+
+# Үүнийг 'main' салбар руу шинэ код орох бүрт автоматаар ажиллуулна
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest # GitHub-ийн үнэгүй сервер дээр ажиллана
+
+    steps:
+    # 1. Repository дахь кодыг сервер рүү татаж авах
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    # 2. Docker Hub руу нууц үгээрээ нэвтрэх
+    - name: Login to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    # 3. Docker Image үүсгэх болон Docker Hub руу хуулах
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v4
+      with:
+        context: .
+        push: true
+        # АНХААР: Доорх 'tany_username' гэдгийг өөрийн Docker нэрээр солино уу!
+        tags: tany_username/my-cicd-app:latest
